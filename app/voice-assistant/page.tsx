@@ -2,32 +2,40 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Bot, Sparkles, ShieldCheck, Lightbulb, ChevronDown, MessageSquare, Zap, Star, Mic } from "lucide-react"
+import { Sparkles, MessageSquare, Zap, Star, Mic, MicOff, Send } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Script from "next/script"
 
 export default function VoiceAssistantPage() {
-  const [isListening, setIsListening] = useState(false)
+  const [isWidgetLoaded, setIsWidgetLoaded] = useState(false)
   const [showScrollHint, setShowScrollHint] = useState(true)
-  const [pulseText, setPulseText] = useState("Click to talk with Vera")
+  const [pulseText, setPulseText] = useState("Talk to Vera")
+  const [isMounted, setIsMounted] = useState(false)
 
-  // Toggle listening state
-  const toggleListening = () => {
-    setIsListening(!isListening)
+  // Set mounted state after initial render
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-    // If we're starting to listen, set a timeout to automatically stop after 5 seconds
-    if (!isListening) {
-      setTimeout(() => {
-        setIsListening(false)
-      }, 5000)
+  // Handle widget load
+  useEffect(() => {
+    const handleWidgetLoad = () => {
+      setIsWidgetLoaded(true)
     }
-  }
+
+    window.addEventListener('elevenlabs-widget-loaded', handleWidgetLoad)
+    
+    return () => {
+      window.removeEventListener('elevenlabs-widget-loaded', handleWidgetLoad)
+    }
+  }, [])
 
   // Cycle through different prompt texts
   useEffect(() => {
     const texts = [
-      "Click to talk with Vera",
+      "Talk to Vera",
       "Ask about skincare routines",
       "Get product recommendations",
       "Learn about ingredients",
@@ -89,264 +97,211 @@ export default function VoiceAssistantPage() {
                   <div className="text-white text-sm">Ask any beauty question</div>
                 </div>
                 <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="rounded-full bg-blue-500/20 p-2 mr-3">
-                    <ShieldCheck className="h-4 w-4 text-blue-400" />
+                  <div className="rounded-full bg-sky-500/20 p-2 mr-3">
+                    <Zap className="h-4 w-4 text-sky-400" />
                   </div>
                   <div className="text-white text-sm">Get personalized advice</div>
                 </div>
-                <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="rounded-full bg-purple-500/20 p-2 mr-3">
-                    <Zap className="h-4 w-4 text-purple-400" />
-                  </div>
-                  <div className="text-white text-sm">Instant product analysis</div>
-                </div>
-                <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="rounded-full bg-amber-500/20 p-2 mr-3">
-                    <Star className="h-4 w-4 text-amber-400" />
-                  </div>
-                  <div className="text-white text-sm">Expert recommendations</div>
-                </div>
+              </div>
+
+              {/* CTA buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={scrollToContent}
+                  className="bg-rose-500 hover:bg-rose-600 text-white"
+                >
+                  Start Chatting
+                </Button>
+                <Link href="/scanner">
+                  <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+                    Try Product Scanner
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
-            {/* Custom Voice Assistant Button */}
+            {/* Vera avatar */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="relative z-10 flex flex-col items-center justify-center"
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="relative z-10 flex justify-center"
             >
-              {/* Animated circles */}
-              <div className="relative">
-                <AnimatePresence>
-                  {isListening && (
-                    <>
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1.8, opacity: 0 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{
-                          repeat: Number.POSITIVE_INFINITY,
-                          duration: 2,
-                          ease: "easeOut",
-                        }}
-                        className="absolute top-1/2 left-1/2 w-40 h-40 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-rose-400/30"
-                      />
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1.4, opacity: 0 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{
-                          repeat: Number.POSITIVE_INFINITY,
-                          duration: 2,
-                          delay: 0.5,
-                          ease: "easeOut",
-                        }}
-                        className="absolute top-1/2 left-1/2 w-40 h-40 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-rose-400/30"
-                      />
-                    </>
-                  )}
-                </AnimatePresence>
-
-                {/* Main button */}
-                <motion.button
-                  onClick={toggleListening}
-                  className={`relative w-40 h-40 rounded-full flex flex-col items-center justify-center ${
-                    isListening
-                      ? "bg-gradient-to-br from-rose-500 to-purple-600 shadow-lg shadow-rose-500/30"
-                      : "bg-gradient-to-br from-slate-700 to-slate-900 hover:from-rose-500 hover:to-purple-600"
-                  } transition-colors duration-300 border border-white/20`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {/* Microphone icon with animation */}
-                  <motion.div
-                    animate={
-                      isListening
-                        ? {
-                            scale: [1, 1.2, 1],
-                            transition: {
-                              repeat: Number.POSITIVE_INFINITY,
-                              duration: 1.5,
-                            },
-                          }
-                        : {}
-                    }
-                    className={`rounded-full p-4 ${isListening ? "bg-white/20" : "bg-rose-500/20"}`}
-                  >
-                    <Mic className={`h-8 w-8 ${isListening ? "text-white" : "text-rose-400"}`} />
-                  </motion.div>
-
-                  <span className={`mt-2 font-medium ${isListening ? "text-white" : "text-white/80"}`}>
-                    {isListening ? "Listening..." : "Ask Vera"}
-                  </span>
-                </motion.button>
-
-                {/* Vera avatar */}
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br from-rose-400 to-purple-500 p-0.5"
-                >
-                  <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center">
-                    <Bot className="h-8 w-8 text-rose-400" />
+              <div className="relative w-64 h-64">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-rose-500 to-purple-600 opacity-20 blur-xl"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-rose-500/30 to-purple-600/30 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">✨</div>
+                    <div className="text-white font-medium">Vera</div>
+                    <div className="text-white/70 text-sm">Your Beauty AI</div>
                   </div>
-                </motion.div>
-              </div>
-
-              {/* Pulsing text below */}
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={pulseText}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="text-white/70 mt-8 text-center"
-                >
-                  {pulseText}
-                </motion.p>
-              </AnimatePresence>
-
-              {/* Voice waves animation when listening */}
-              {isListening && (
-                <div className="mt-6 flex items-center justify-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="w-1 bg-rose-400"
-                      animate={{
-                        height: [15, 30, 15],
-                      }}
-                      transition={{
-                        repeat: Number.POSITIVE_INFINITY,
-                        duration: 1,
-                        delay: i * 0.1,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  ))}
                 </div>
-              )}
+              </div>
             </motion.div>
           </div>
+        </div>
 
-          {/* Scroll hint */}
+        {/* Scroll hint */}
+        <AnimatePresence>
           {showScrollHint && (
             <motion.div
-              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center cursor-pointer"
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.5 }}
+              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70 text-sm flex flex-col items-center cursor-pointer"
               onClick={scrollToContent}
             >
-              <p className="text-white/50 text-sm mb-2">Learn more</p>
-              <ChevronDown className="h-6 w-6 text-white/50" />
+              <div className="mb-1">Scroll to chat</div>
+              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                  className="w-1 h-1 bg-white/70 rounded-full mt-2"
+                ></motion.div>
+              </div>
             </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </section>
 
-      {/* Content section below */}
+      {/* Content section */}
       <section id="content-section" className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 mb-4 text-sm font-medium rounded-full bg-rose-100 text-rose-800">
-              AI-Powered Beauty Expertise
-            </div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Your Personal Beauty Expert</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Vera combines advanced AI with extensive beauty knowledge to provide personalized advice, product
-              recommendations, and skincare guidance tailored to your unique needs.
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Chat with Vera</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Ask Vera about skincare routines, product recommendations, ingredient safety, or any beauty-related questions.
+              She's here to help with personalized advice based on your skin type and concerns.
             </p>
           </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <Card className="border-2 border-slate-100 hover:border-rose-200 transition-all">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="rounded-full bg-rose-100 p-3 w-14 h-14 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-rose-600" />
+          {/* ElevenLabs Convai Widget */}
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-12">
+            <div className="flex justify-center mb-6">
+              <div className="inline-block px-4 py-2 bg-rose-50 text-rose-600 rounded-full text-sm font-medium">
+                <Sparkles className="h-4 w-4 inline-block mr-1" /> Powered by ElevenLabs
+              </div>
+            </div>
+            
+            <div className="flex justify-center">
+              {isMounted && (
+                <div className="w-full max-w-2xl">
+                  <elevenlabs-convai agent-id="8rDteNOETBub5RLKCMEN"></elevenlabs-convai>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-slate-900">Personalized Advice</h3>
-                <p className="text-gray-600">
-                  Get customized recommendations based on your skin type, concerns, and beauty goals.
+              )}
+            </div>
+          </div>
+
+          {/* Features grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <Card className="border-2 border-slate-100 hover:border-rose-200 transition-all">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <div className="rounded-full bg-rose-500/20 p-2 mr-3">
+                    <MessageSquare className="h-5 w-5 text-rose-500" />
+                  </div>
+                  Personalized Advice
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Get tailored skincare and beauty recommendations based on your specific skin type, concerns, and preferences.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-slate-100 hover:border-rose-200 transition-all">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="rounded-full bg-sky-100 p-3 w-14 h-14 flex items-center justify-center mb-4">
-                  <ShieldCheck className="h-6 w-6 text-sky-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-slate-900">Ingredient Analysis</h3>
-                <p className="text-gray-600">
-                  Understand product ingredients, their benefits, and potential concerns for your skin.
+            <Card className="border-2 border-slate-100 hover:border-sky-200 transition-all">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <div className="rounded-full bg-sky-500/20 p-2 mr-3">
+                    <Zap className="h-5 w-5 text-sky-500" />
+                  </div>
+                  Product Knowledge
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Learn about ingredients, product formulations, and how different products work for various skin types.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-slate-100 hover:border-rose-200 transition-all">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="rounded-full bg-purple-100 p-3 w-14 h-14 flex items-center justify-center mb-4">
-                  <Lightbulb className="h-6 w-6 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-slate-900">Beauty Education</h3>
-                <p className="text-gray-600">
-                  Learn about skincare science, beauty techniques, and the latest industry trends.
+            <Card className="border-2 border-slate-100 hover:border-purple-200 transition-all">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <div className="rounded-full bg-purple-500/20 p-2 mr-3">
+                    <Star className="h-5 w-5 text-purple-500" />
+                  </div>
+                  Beauty Education
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Expand your beauty knowledge with expert insights on skincare routines, makeup techniques, and beauty trends.
                 </p>
               </CardContent>
             </Card>
           </div>
 
-          {/* How to use */}
-          <div className="bg-gradient-to-r from-slate-50 to-rose-50 rounded-xl p-8 mb-16">
-            <h3 className="text-2xl font-bold text-slate-900 mb-6 text-center">How to Use Vera</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg p-6 shadow-sm flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold mb-4">
-                  1
+          {/* Testimonials */}
+          <div className="bg-slate-50 rounded-xl p-8 mb-16">
+            <h3 className="text-2xl font-bold text-slate-900 mb-6 text-center">What Users Say</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 font-bold mr-4">
+                    A
+                  </div>
+                  <div>
+                    <div className="font-medium">Alexandra</div>
+                    <div className="text-slate-500 text-sm">Combination Skin</div>
+                  </div>
                 </div>
-                <h4 className="font-semibold mb-2 text-slate-900">Click the Microphone</h4>
-                <p className="text-gray-600">Click the microphone button to activate Vera's voice recognition.</p>
+                <p className="text-slate-600">
+                  "Vera helped me find the perfect moisturizer for my combination skin. Her recommendations were spot-on, and my skin has never looked better!"
+                </p>
               </div>
-
-              <div className="bg-white rounded-lg p-6 shadow-sm flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold mb-4">
-                  2
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center text-sky-500 font-bold mr-4">
+                    M
+                  </div>
+                  <div>
+                    <div className="font-medium">Michael</div>
+                    <div className="text-slate-500 text-sm">Sensitive Skin</div>
+                  </div>
                 </div>
-                <h4 className="font-semibold mb-2 text-slate-900">Ask Your Question</h4>
-                <p className="text-gray-600">Speak clearly and ask any beauty or skincare related question.</p>
-              </div>
-
-              <div className="bg-white rounded-lg p-6 shadow-sm flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold mb-4">
-                  3
-                </div>
-                <h4 className="font-semibold mb-2 text-slate-900">Get Expert Advice</h4>
-                <p className="text-gray-600">Vera will respond with personalized advice and recommendations.</p>
+                <p className="text-slate-600">
+                  "As someone with sensitive skin, I was always hesitant to try new products. Vera's ingredient analysis has been a game-changer for my skincare routine."
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Premium callout */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-8 text-white">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="mb-6 md:mb-0 md:mr-6">
-                <h3 className="text-2xl font-bold mb-2">Upgrade to Premium</h3>
-                <p className="text-white/70 max-w-xl">
-                  Get unlimited access to Vera with advanced features, detailed analysis, priority support, and
-                  exclusive content.
-                </p>
-              </div>
-              <Link href="/premium">
-                <Button className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 text-lg">Go Premium</Button>
-              </Link>
-            </div>
+          {/* CTA section */}
+          <div className="bg-gradient-to-r from-rose-500 to-purple-600 rounded-xl p-8 text-center text-white">
+            <h3 className="text-2xl font-bold mb-4">Ready to Transform Your Beauty Routine?</h3>
+            <p className="mb-6 max-w-2xl mx-auto">
+              Start chatting with Vera now and discover personalized beauty advice tailored to your unique needs.
+            </p>
+            <Button
+              onClick={scrollToContent}
+              className="bg-white text-rose-600 hover:bg-white/90"
+            >
+              Chat with Vera
+            </Button>
           </div>
         </div>
       </section>
+
+      {/* Load ElevenLabs Convai Widget Script */}
+      <Script 
+        src="https://elevenlabs.io/convai-widget/index.js" 
+        async 
+        type="text/javascript"
+        onLoad={() => setIsWidgetLoaded(true)}
+      />
     </div>
   )
 }

@@ -1,8 +1,41 @@
 "use client"
 import { motion } from "framer-motion"
 import { Sparkles, Scan, ShieldCheck, Zap } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function HeroAnimation() {
+  // Use state to track if component is mounted
+  const [isMounted, setIsMounted] = useState(false)
+  
+  // Set mounted state after initial render
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+  
+  // Predefined particle positions to avoid random values during hydration
+  const particles = [
+    { x: -198.21, y: -24.82, scale: 0.82, opacity: 0.75 },
+    { x: -139.48, y: -131.01, scale: 0.50, opacity: 0.32 },
+    { x: -194.11, y: 31.65, scale: 0.94, opacity: 0.51 },
+    { x: 134.82, y: 178.06, scale: 0.85, opacity: 0.78 },
+    { x: -198.44, y: -6.21, scale: 0.51, opacity: 0.64 },
+    { x: -45.14, y: -175.31, scale: 0.56, opacity: 0.64 },
+    { x: 189.25, y: 100.92, scale: 0.78, opacity: 0.79 },
+    { x: 105.70, y: 187.30, scale: 0.62, opacity: 0.49 },
+    { x: 198.02, y: -95.10, scale: 0.99, opacity: 0.35 },
+    { x: -52.92, y: -194.82, scale: 0.82, opacity: 0.80 },
+    { x: -76.29, y: 148.35, scale: 0.80, opacity: 0.40 },
+    { x: -50.98, y: 183.11, scale: 0.70, opacity: 0.65 },
+    { x: 126.20, y: -141.64, scale: 0.71, opacity: 0.45 },
+    { x: 164.08, y: 77.80, scale: 0.65, opacity: 0.31 },
+    { x: -35.30, y: -104.69, scale: 0.54, opacity: 0.45 },
+    { x: -191.26, y: -88.79, scale: 0.62, opacity: 0.45 },
+    { x: -95.74, y: -53.13, scale: 0.74, opacity: 0.54 },
+    { x: -143.43, y: -19.03, scale: 0.59, opacity: 0.53 },
+    { x: -151.99, y: -77.90, scale: 0.64, opacity: 0.61 },
+    { x: -98.97, y: -48.23, scale: 0.64, opacity: 0.56 }
+  ]
+
   return (
     <div className="relative w-full h-[600px] flex items-center justify-center overflow-hidden">
       {/* Background elements */}
@@ -122,22 +155,22 @@ export default function HeroAnimation() {
 
         {/* Floating particles */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
+          {particles.map((particle, i) => (
             <motion.div
               key={i}
               className="absolute w-1 h-1 rounded-full bg-white/30"
               initial={{
-                x: Math.random() * 400 - 200,
-                y: Math.random() * 400 - 200,
-                scale: Math.random() * 0.5 + 0.5,
-                opacity: Math.random() * 0.5 + 0.3,
+                x: particle.x,
+                y: particle.y,
+                scale: particle.scale,
+                opacity: particle.opacity,
               }}
-              animate={{
-                y: [null, Math.random() * 200 - 100],
-                opacity: [null, Math.random() * 0.3 + 0.1],
-              }}
+              animate={isMounted ? {
+                y: [particle.y, particle.y + (Math.random() * 200 - 100)],
+                opacity: [particle.opacity, particle.opacity * 0.7],
+              } : {}}
               transition={{
-                duration: Math.random() * 5 + 5,
+                duration: 5 + (i % 5),
                 repeat: Number.POSITIVE_INFINITY,
                 repeatType: "reverse",
               }}
