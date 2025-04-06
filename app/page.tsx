@@ -1,9 +1,22 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Scan, Mic, BookOpen, User, Star, ShieldCheck, Sparkles, Zap } from "lucide-react"
 import FeatureCard from "@/components/feature-card"
 import HeroAnimation from "@/components/hero-animation"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
+  const router = useRouter()
+
+  const scrollToHowItWorks = () => {
+    const section = document.getElementById('how-it-works')
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -24,11 +37,18 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                <Button className="bg-rose-600 hover:bg-rose-700 text-white">
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                <Link href="/profile">
+                  <Button className="bg-rose-600 hover:bg-rose-700 text-white">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button 
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
+                  onClick={scrollToHowItWorks}
+                >
+                  Learn More
                 </Button>
-                <Button className="bg-rose-600 hover:bg-rose-700 text-white">Learn More</Button>
               </div>
 
               {/* App features highlight */}
@@ -93,7 +113,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="w-full py-16 bg-white">
+      <section id="how-it-works" className="w-full py-16 bg-white scroll-mt-16">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
             <div className="inline-block px-3 py-1 mb-2 text-sm font-medium rounded-full bg-rose-100 text-rose-800">
@@ -237,10 +257,12 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 mt-2">
-              <Button className="bg-rose-600 hover:bg-rose-700 text-white">
-                Create Your Profile
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <Link href="/profile">
+                <Button className="bg-rose-600 hover:bg-rose-700 text-white">
+                  Create Your Profile
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
