@@ -37,7 +37,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                <Link href="/profile">
+                <Link href="/auth/sign-in">
                   <Button className="bg-rose-600 hover:bg-rose-700 text-white">
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -257,7 +257,7 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 mt-2">
-              <Link href="/profile">
+              <Link href="/auth/sign-in">
                 <Button className="bg-rose-600 hover:bg-rose-700 text-white">
                   Create Your Profile
                   <ArrowRight className="ml-2 h-4 w-4" />
