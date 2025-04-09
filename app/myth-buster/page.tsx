@@ -128,20 +128,6 @@ export default function MythBusterPage() {
                     <p className="text-gray-800">{result.myth}</p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-700">VERDICT:</h4>
-                    <p
-                      className={`font-bold ${
-                        result.truth.includes("TRUE") && !result.truth.includes("FALSE")
-                          ? "text-green-600"
-                          : result.truth.includes("PARTIALLY")
-                            ? "text-amber-600"
-                            : "text-red-600"
-                      }`}
-                    >
-                      {result.truth}
-                    </p>
-                  </div>
-                  <div>
                     <h4 className="font-semibold text-gray-700">EXPLANATION:</h4>
                     <p className="text-gray-800">{result.explanation}</p>
                   </div>
